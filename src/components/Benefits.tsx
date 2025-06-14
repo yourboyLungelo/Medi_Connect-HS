@@ -1,5 +1,5 @@
 
-import { HeartPulse, CalendarCheck, UserShield } from "lucide-react";
+import { HeartPulse, CalendarCheck, ShieldCheck } from "lucide-react";
 
 const benefits = [
   {
@@ -13,7 +13,7 @@ const benefits = [
     desc: "Access your medical history, prescriptions, and lab results securely, whenever you need them.",
   },
   {
-    icon: <UserShield className="w-8 h-8 text-purple-500" />,
+    icon: <ShieldCheck className="w-8 h-8 text-purple-500" />,
     title: "Trusted, Secure System",
     desc: "Your health data is protected with the latest security standards and government compliance.",
   },
