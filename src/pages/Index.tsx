@@ -1,4 +1,3 @@
-
 // Main landing page for the public healthcare system
 
 import Hero from "@/components/Hero";
@@ -15,13 +14,13 @@ const Index = () => {
         <span className="font-extrabold text-2xl text-blue-800 tracking-tight">Public Health Portal</span>
         <div className="flex gap-2">
           <a
-            href="#login"
+            href="/login"
             className="rounded-md text-blue-700 px-6 py-2 hover:bg-blue-50 font-semibold transition"
           >
             Log in
           </a>
           <a
-            href="#register"
+            href="/register"
             className="bg-blue-600 rounded-md text-white px-6 py-2 font-semibold hover:bg-blue-700 transition shadow"
           >
             Register
@@ -40,4 +39,3 @@ const Index = () => {
 };
 
 export default Index;
-
