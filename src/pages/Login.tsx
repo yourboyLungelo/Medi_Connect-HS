@@ -3,15 +3,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FormEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   // Dummy submit handler (no backend/auth yet)
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    alert("This is a placeholder. Your ID: " + id);
+    // Here, you should check credentials using backend or Supabase in a real app
+    if (id && password) {
+      navigate("/dashboard");
+    } else {
+      alert("Please enter your Patient ID and Password.");
+    }
   };
 
   return (
