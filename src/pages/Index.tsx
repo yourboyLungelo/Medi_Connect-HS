@@ -1,3 +1,4 @@
+
 // Main landing page for the public healthcare system
 
 import Hero from "@/components/Hero";
@@ -25,6 +26,12 @@ const Index = () => {
           >
             Register
           </a>
+          <a
+            href="/admin-login"
+            className="rounded-md text-gray-700 px-6 py-2 hover:bg-gray-100 font-semibold border border-gray-300 transition"
+          >
+            Admin Login
+          </a>
         </div>
       </header>
 
@@ -39,3 +46,4 @@ const Index = () => {
 };
 
 export default Index;
+
