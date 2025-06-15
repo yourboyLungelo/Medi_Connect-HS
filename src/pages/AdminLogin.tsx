@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,20 +5,36 @@ import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState('');
+  const [idNumber, setIdNumber] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  // Dummy submit handler (no backend/auth yet)
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    // Here, you should check credentials using backend or Supabase in a real app
-    if (email && password) {
-      alert("Logged in as admin: " + email);
-      // Here you could navigate to an admin dashboard if you have one
-      // navigate('/admin-dashboard');
-    } else {
-      alert("Please enter your Admin Email and Password.");
+    if (!idNumber || !password) {
+      alert("Please enter your Admin ID Number and Password.");
+      return;
+    }
+    try {
+      const response = await fetch('http://localhost:5000/api/admins/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idNumber, password }),
+      });
+      if (!response.ok) {
+        if (response.status === 401) {
+          alert("Invalid ID Number or Password.");
+        } else {
+          alert("Failed to login admin.");
+        }
+        return;
+      }
+      const admin = await response.json();
+      localStorage.setItem('adminName', admin.name);
+      alert("Logged in as admin: " + idNumber);
+      navigate('/adminDashboard');
+    } catch (error) {
+      alert("Error during login: " + error);
     }
   };
 
@@ -31,13 +46,12 @@ const AdminLogin = () => {
       >
         <h2 className="text-2xl font-bold text-blue-700 text-center">Admin Login</h2>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="admin-email">Admin Email</Label>
+          <Label htmlFor="admin-id">Admin ID Number</Label>
           <Input
-            id="admin-email"
-            type="email"
-            placeholder="Enter your admin email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
+            id="admin-id"
+            placeholder="Enter your admin ID number"
+            value={idNumber}
+            onChange={e => setIdNumber(e.target.value)}
             required
             autoFocus
           />
@@ -66,4 +80,3 @@ const AdminLogin = () => {
 };
 
 export default AdminLogin;
-

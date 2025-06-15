@@ -5,15 +5,38 @@ import { Label } from "@/components/ui/label";
 import { FormEvent, useState } from "react";
 
 const Register = () => {
-  const [id, setId] = useState("");
+  const [idNumber, setIdNumber] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
-  // Dummy submit handler (no backend/auth yet)
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    alert("This is a placeholder. Welcome, " + name + "!");
-  };
+      if (!idNumber || !password || !name || !email) {
+        alert("Please fill in all required fields.");
+        return;
+      }
+      try {
+        //console.log("Sending registration data:", { idNumber, name, email, phoneNumber, password });
+        const response = await fetch('http://localhost:5000/api/users/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idNumber, name, email, phoneNumber, password }),
+        });
+        if (response.ok) {
+          localStorage.setItem('userName', name);
+          alert("Registration successful! You can now log in.");
+          // Optionally, redirect to login page
+          window.location.href = "/login";
+        } else {
+          const data = await response.json();
+          alert("Registration failed: " + data.message);
+        }
+      } catch (error) {
+        alert("Error during registration: " + error);
+      }
+    };
 
   return (
     <main className="min-h-screen flex justify-center items-center bg-blue-50">
@@ -37,9 +60,30 @@ const Register = () => {
           <Input
             id="patient-id"
             placeholder="Set your Patient ID"
-            value={id}
-            onChange={e => setId(e.target.value)}
+            value={idNumber}
+            onChange={e => setIdNumber(e.target.value)}
             required
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="phone-number">Phone Number</Label>
+          <Input
+            id="phone-number"
+            type="tel"
+            placeholder="Enter your phone number"
+            value={phoneNumber}
+            onChange={e => setPhoneNumber(e.target.value)}
           />
         </div>
         <div className="flex flex-col gap-2">

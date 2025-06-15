@@ -1,4 +1,4 @@
-
+import React from "react";
 // Main landing page for the public healthcare system
 
 import Hero from "@/components/Hero";
@@ -12,7 +12,7 @@ const Index = () => {
     <main className="bg-gradient-to-b from-blue-50 to-white min-h-screen w-full">
       {/* Header */}
       <header className="w-full px-8 py-5 flex justify-between items-center shadow-sm bg-white/80 sticky top-0 z-10">
-        <span className="font-extrabold text-2xl text-blue-800 tracking-tight">Public Health Portal</span>
+        <span className="font-extrabold text-2xl text-blue-800 tracking-tight">Medi Connect Portal</span>
         <div className="flex gap-2">
           <a
             href="/login"
