@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,19 +5,23 @@ import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [id, setId] = useState("");
+  const [idNumber, setId] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const navigate = useNavigate();
 
   // Dummy submit handler (no backend/auth yet)
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     // Here, you should check credentials using backend or Supabase in a real app
-    if (id && password) {
+    if (idNumber && password) {
+      localStorage.setItem("loggedInUserId", idNumber);
+      localStorage.setItem("loggedInUserName", name);
       navigate("/dashboard");
     } else {
       alert("Please enter your Patient ID and Password.");
     }
+    
   };
 
   return (
@@ -33,7 +36,7 @@ const Login = () => {
           <Input
             id="patient-id"
             placeholder="Enter your Patient ID"
-            value={id}
+            value={idNumber}
             onChange={e => setId(e.target.value)}
             required
             autoFocus

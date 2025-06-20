@@ -25,7 +25,7 @@ const Register = () => {
           body: JSON.stringify({ idNumber, name, email, phoneNumber, password }),
         });
         if (response.ok) {
-          localStorage.setItem('userName', name);
+          //localStorage.setItem('nuserName', name);
           alert("Registration successful! You can now log in.");
           // Optionally, redirect to login page
           window.location.href = "/login";

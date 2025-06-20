@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors'); // ✅ add this
 const userRoutes = require('./routes/users');
 const adminRoutes = require('./routes/admins'); 
+const doctorRoutes = require('./routes/doctors');
 
 const app = express();
 const PORT = 5000;
@@ -17,6 +18,7 @@ app.use(express.json());
 
 app.use('/api/users', userRoutes);
 app.use('/api/admins', adminRoutes);
+app.use('/api/doctors', doctorRoutes);
 
 mongoose.connect('mongodb://localhost:27017/Healthcare', {
   useNewUrlParser: true,
