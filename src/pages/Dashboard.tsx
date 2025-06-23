@@ -11,6 +11,37 @@ const Dashboard = () => {
   const [loadingAppointments, setLoadingAppointments] = useState(true);
   const [userName, setUserName] = useState("");
 
+  // Sidebar open state
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Toggle sidebar function
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  // Session timeout state
+  const [timeoutId, setTimeoutId] = useState(null);
+
+  // Logout function
+  const logout = () => {
+    // Clear user session data (e.g., localStorage)
+    localStorage.clear();
+    // Redirect to login page
+    window.location.href = "/login";
+  };
+
+  // Reset inactivity timer
+  const resetTimer = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    const id = setTimeout(() => {
+      alert("You have been logged out due to inactivity.");
+      logout();
+    }, 15 * 60 * 1000); // 15 minutes
+    setTimeoutId(id);
+  };
+
   useEffect(() => {
     // Load user's name from localStorage
     const storedName = localStorage.getItem("userName");
@@ -18,49 +49,70 @@ const Dashboard = () => {
       setUserName(storedName);
     }
 
-    // Fetch user profile
-    const fetchUserProfile = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/userProfile");
-        if (res.ok) {
-          const data = await res.json();
-          setUserProfile(data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch user profile:", error);
-      } finally {
-        setLoadingProfile(false);
-      }
-    };
+    // Set up event listeners for user activity
+    const events = ["mousemove", "keydown", "click", "scroll", "touchstart"];
+    events.forEach((event) => {
+      window.addEventListener(event, resetTimer);
+    });
 
-    // Fetch upcoming appointments
-    const fetchUpcomingAppointments = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/appointments/upcoming");
-        if (res.ok) {
-          const data = await res.json();
-          setUpcomingAppointments(data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch upcoming appointments:", error);
-      }
-    };
+    // Start the timer initially
+    resetTimer();
 
-    // Fetch past appointments
-    const fetchPastAppointments = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/appointments/past");
-        if (res.ok) {
-          const data = await res.json();
-          setPastAppointments(data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch past appointments:", error);
-      } finally {
-        setLoadingAppointments(false);
+    // Cleanup event listeners on unmount
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
       }
+      events.forEach((event) => {
+        window.removeEventListener(event, resetTimer);
+      });
     };
+  }, [timeoutId]);
 
+  // Fetch user profile
+  const fetchUserProfile = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/userProfile");
+      if (res.ok) {
+        const data = await res.json();
+        setUserProfile(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user profile:", error);
+    } finally {
+      setLoadingProfile(false);
+    }
+  };
+
+  // Fetch upcoming appointments
+  const fetchUpcomingAppointments = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/appointments/upcoming");
+      if (res.ok) {
+        const data = await res.json();
+        setUpcomingAppointments(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch upcoming appointments:", error);
+    }
+  };
+
+  // Fetch past appointments
+  const fetchPastAppointments = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/appointments/past");
+      if (res.ok) {
+        const data = await res.json();
+        setPastAppointments(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch past appointments:", error);
+    } finally {
+      setLoadingAppointments(false);
+    }
+  };
+
+  useEffect(() => {
     fetchUserProfile();
     fetchUpcomingAppointments();
     fetchPastAppointments();
@@ -68,20 +120,22 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen flex bg-blue-50">
-      <UserSidebar />
+      <UserSidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
       <div className="flex-grow flex flex-col">
-        <Header />
+        <Header toggleSidebar={toggleSidebar} />
         <main className="flex-grow flex items-center justify-center p-6">
           <div className="bg-white p-6 rounded-lg shadow w-full max-w-md text-center">
             <div className="mb-4 text-blue-600">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="mx-auto h-10 w-10"
+                className="mx-auto h-10 w-10 cursor-pointer"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
                 strokeWidth={2}
+                onClick={toggleSidebar}
               >
+                <title>Toggle Sidebar</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"

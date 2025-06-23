@@ -29,6 +29,7 @@ const AdminDashboard = () => {
     surname: "",
     staffId: "",
     email: "",
+    password: "",
     cellphone: "",
     specialization: "",
     hospitalName: "",
@@ -40,6 +41,8 @@ const AdminDashboard = () => {
     bio: "",
     profilePicture: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -92,7 +95,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Header />
+      <Header toggleSidebar={undefined} />
       <div className="flex flex-grow">
         {/* Sidebar */}
         <nav className="w-64 bg-white shadow-md p-6">
@@ -267,6 +270,7 @@ const AdminDashboard = () => {
                             surname: "",
                             staffId: "",
                             email: "",
+                            password: "",
                             cellphone: "",
                             specialization: "",
                             hospitalName: "",
@@ -479,6 +483,36 @@ const AdminDashboard = () => {
                           onChange={(e) => setNewDoctor({ ...newDoctor, profilePicture: e.target.value })}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
+                      </div>
+                      <div className="mb-4 relative">
+                        <label className="block mb-1 font-medium" htmlFor="password">
+                          Password
+                        </label>
+                        <input
+                          id="password"
+                          type={showPassword ? "text" : "password"}
+                          value={newDoctor.password}
+                          onChange={(e) => setNewDoctor({ ...newDoctor, password: e.target.value })}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-600 hover:text-gray-900 focus:outline-none"
+                          tabIndex={-1}
+                        >
+                          {showPassword ? (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M10 3C5 3 1.73 7.11 1 10c.73 2.89 4 7 9 7s8.27-4.11 9-7c-.73-2.89-4-7-9-7zM10 15a5 5 0 110-10 5 5 0 010 10z" />
+                              <path d="M10 7a3 3 0 100 6 3 3 0 000-6z" />
+                            </svg>
+                          ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M4.03 3.97a.75.75 0 10-1.06 1.06l1.5 1.5A8.96 8.96 0 001 10c.73 2.89 4 7 9 7a8.96 8.96 0 004.47-1.15l1.5 1.5a.75.75 0 101.06-1.06L4.03 3.97zM10 15a5 5 0 01-5-5c0-.7.18-1.36.5-1.94l6.44 6.44A4.98 4.98 0 0110 15z" />
+                            </svg>
+                          )}
+                        </button>
                       </div>
                       <div className="flex justify-end space-x-4">
                         <button
