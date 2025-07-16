@@ -3,8 +3,6 @@ const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 
-
-
 router.post('/register', async (req, res) => {
   try {
     console.log("Registration request body:", req.body);
@@ -26,7 +24,6 @@ router.post('/register', async (req, res) => {
       email,
       phoneNumber,
       password: hashedPassword,
-      
     });
     await newUser.save();
     res.status(201).json({ message: 'User registered successfully' });
@@ -46,8 +43,21 @@ router.get('/', async (req, res) => {
   }
 });
 
+const authenticate = (req, res, next) => {
+  // Example authentication middleware
+  // In real app, extract user ID from JWT token or session
+  // Here, we simulate by reading user ID from header 'x-user-id'
+  const userId = req.header('x-user-id');
+  console.log("Authenticate middleware received userId:", userId);
+  if (!userId) {
+    return res.status(401).json({ message: 'Unauthorized: No user ID provided' });
+  }
+  req.userId = userId;
+  next();
+};
+
 // GET /api/users/current - get current logged-in user info
-router.get('/current', async (req, res) => {
+router.get('/current', authenticate, async (req, res) => {
   try {
     // For demo, using mockCurrentUserId
     const user = await User.findById(mockCurrentUserId).select('-password');
