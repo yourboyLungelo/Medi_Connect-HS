@@ -20,6 +20,9 @@ app.use('/api/users', userRoutes);
 app.use('/api/admins', adminRoutes);
 app.use('/api/doctors', doctorRoutes);
 
+const appointmentRoutes = require('./routes/appointments');
+app.use('/api/appointments', appointmentRoutes);
+
 mongoose.connect('mongodb://localhost:27017/Healthcare', {
   useNewUrlParser: true,
   useUnifiedTopology: true

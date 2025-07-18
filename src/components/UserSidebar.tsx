@@ -26,7 +26,7 @@ const UserSidebar = ({ isOpen, toggleSidebar }) => {
         </li>
         <li>
           <NavLink
-            to="/appointments"
+            to="/bookappointment"
             className={({ isActive }) =>
               isActive ? 'text-blue-600 font-bold' : 'text-gray-700 hover:text-blue-600'
             }

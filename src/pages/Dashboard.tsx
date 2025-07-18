@@ -72,10 +72,16 @@ const Dashboard = () => {
   // Fetch user profile
   const fetchUserProfile = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/userProfile");
+      const userId = localStorage.getItem('userId');
+      const res = await fetch("http://localhost:5000/api/users/current", {
+        headers: {
+          'x-user-id': userId || ''
+        }
+      });
       if (res.ok) {
         const data = await res.json();
         setUserProfile(data);
+        setUserName(data.name || "");
       }
     } catch (error) {
       console.error("Failed to fetch user profile:", error);
@@ -156,45 +162,47 @@ const Dashboard = () => {
 
           {loadingProfile && <p>Loading profile...</p>}
 
-          <section className="mb-8 bg-white p-4 rounded shadow">
-            <h2 className="text-xl font-semibold mb-4">Upcoming Appointments</h2>
-            {upcomingAppointments.length === 0 ? (
-              <p>No upcoming appointments.</p>
-            ) : (
-              <ul>
-                {upcomingAppointments.map((appt) => (
-                  <li key={appt._id} className="mb-2 border-b pb-2">
-                    <p><strong>Date:</strong> {new Date(appt.date).toLocaleDateString()}</p>
-                    <p><strong>Time:</strong> {appt.time}</p>
-                    <p><strong>Doctor:</strong> {appt.doctor}</p>
-                    <p><strong>Type:</strong> {appt.type}</p>
-                    <p><strong>Status:</strong> {appt.status}</p>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <section className="bg-white p-4 rounded shadow">
+              <h2 className="text-xl font-semibold mb-4">Upcoming Appointments</h2>
+              {upcomingAppointments.length === 0 ? (
+                <p>No upcoming appointments.</p>
+              ) : (
+                <ul>
+                  {upcomingAppointments.map((appt) => (
+                    <li key={appt._id} className="mb-2 border-b pb-2">
+                      <p><strong>Date:</strong> {new Date(appt.date).toLocaleDateString()}</p>
+                      <p><strong>Time:</strong> {appt.time}</p>
+                      <p><strong>Doctor:</strong> {appt.doctor}</p>
+                      <p><strong>Type:</strong> {appt.type}</p>
+                      <p><strong>Status:</strong> {appt.status}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
 
-          <section className="mb-8 bg-white p-4 rounded shadow">
-            <h2 className="text-xl font-semibold mb-4">Past Appointments</h2>
-            {loadingAppointments ? (
-              <p>Loading past appointments...</p>
-            ) : pastAppointments.length === 0 ? (
-              <p>No past appointments.</p>
-            ) : (
-              <ul>
-                {pastAppointments.map((appt) => (
-                  <li key={appt._id} className="mb-2 border-b pb-2">
-                    <p><strong>Date:</strong> {new Date(appt.date).toLocaleDateString()}</p>
-                    <p><strong>Time:</strong> {appt.time}</p>
-                    <p><strong>Doctor:</strong> {appt.doctor}</p>
-                    <p><strong>Type:</strong> {appt.type}</p>
-                    <p><strong>Status:</strong> {appt.status}</p>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
+            <section className="bg-white p-4 rounded shadow">
+              <h2 className="text-xl font-semibold mb-4">Past Appointments</h2>
+              {loadingAppointments ? (
+                <p>Loading past appointments...</p>
+              ) : pastAppointments.length === 0 ? (
+                <p>No past appointments.</p>
+              ) : (
+                <ul>
+                  {pastAppointments.map((appt) => (
+                    <li key={appt._id} className="mb-2 border-b pb-2">
+                      <p><strong>Date:</strong> {new Date(appt.date).toLocaleDateString()}</p>
+                      <p><strong>Time:</strong> {appt.time}</p>
+                      <p><strong>Doctor:</strong> {appt.doctor}</p>
+                      <p><strong>Type:</strong> {appt.type}</p>
+                      <p><strong>Status:</strong> {appt.status}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          </div>
 
           <section className="mb-8 bg-white p-4 rounded shadow">
             <h2 className="text-xl font-semibold mb-4">Medical Records</h2>

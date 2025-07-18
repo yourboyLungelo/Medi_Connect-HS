@@ -374,27 +374,61 @@ const AdminDashboard = () => {
                         <label className="block mb-1 font-medium" htmlFor="specialization">
                           Specialization
                         </label>
-                        <input
+                        <select
                           id="specialization"
-                          type="text"
                           value={newDoctor.specialization}
                           onChange={(e) => setNewDoctor({ ...newDoctor, specialization: e.target.value })}
                           required
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
+                        >
+                          <option value="" disabled>
+                            Select specialization
+                          </option>
+                          <option>General Medicine</option>
+                          <option>General Surgery</option>
+                          <option>Internal Medicine</option>
+                          <option>Pediatrics</option>
+                          <option>Obstetrics & Gynecology</option>
+                          <option>Family Medicine</option>
+                          <option>Emergency Medicine</option>
+                          <option>Anesthesiology</option>
+                          <option>Psychiatry</option>
+                          <option>Orthopedic Surgery</option>
+                          <option>Radiology</option>
+                          <option>Pathology</option>
+                          <option>Ophthalmology</option>
+                          <option>Dermatology</option>
+                        </select>
                       </div>
                       <div className="mb-4">
                         <label className="block mb-1 font-medium" htmlFor="hospitalName">
                           Hospital Name
                         </label>
-                        <input
+                        <select
                           id="hospitalName"
-                          type="text"
                           value={newDoctor.hospitalName}
                           onChange={(e) => setNewDoctor({ ...newDoctor, hospitalName: e.target.value })}
                           required
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
+                        >
+                          <option value="" disabled>
+                            Select a hospital
+                          </option>
+                          <option value="Rob Ferreira Provincial Hospital (Mbombela/Nelspruit)">
+                            Rob Ferreira Provincial Hospital (Mbombela/Nelspruit)
+                          </option>
+                          <option value="Sabie Hospital (Sabie)">Sabie Hospital (Sabie)</option>
+                          <option value="Tintswalo Hospital (Acornhoek)">Tintswalo Hospital (Acornhoek)</option>
+                          <option value="Mapulaneng Hospital (Bushbuckridge)">Mapulaneng Hospital (Bushbuckridge)</option>
+                          <option value="Matikwana Hospital (Mkhuhlu)">Matikwana Hospital (Mkhuhlu)</option>
+                          <option value="Lydenburg Hospital (Mashishing)">Lydenburg Hospital (Mashishing)</option>
+                          <option value="Shongwe Mission Hospital (Schoemansdal)">Shongwe Mission Hospital (Schoemansdal)</option>
+                          <option value="Tonga Hospital (Komatipoort)">Tonga Hospital (Komatipoort)</option>
+                          <option value="Barberton Hospital (Barberton)">Barberton Hospital (Barberton)</option>
+                          <option value="Bongani TB Hospital (Hazyview)">Bongani TB Hospital (Hazyview)</option>
+                          <option value="Philadelphia Hospital (Dennilton)">Philadelphia Hospital (Dennilton)</option>
+                          <option value="Embhuleni Hospital (Elukwatini)">Embhuleni Hospital (Elukwatini)</option>
+                        </select>
                       </div>
                       <div className="mb-4">
                         <label className="block mb-1 font-medium" htmlFor="gender">
@@ -452,14 +486,20 @@ const AdminDashboard = () => {
                         <label className="block mb-1 font-medium" htmlFor="availability">
                           Availability
                         </label>
-                        <input
+                        <select
                           id="availability"
-                          type="text"
                           value={newDoctor.availability}
                           onChange={(e) => setNewDoctor({ ...newDoctor, availability: e.target.value })}
                           required
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
+                        >
+                          <option value="" disabled>
+                            Select availability
+                          </option>
+                          <option>Mon–Fri 08:00–16:00</option>
+                          <option>Mon–Fri 09:00–17:00</option>
+                          <option>Mon–Sat 07:30–13:00</option>
+                        </select>
                       </div>
                       <div className="mb-4">
                         <label className="block mb-1 font-medium" htmlFor="bio">

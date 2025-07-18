@@ -15,8 +15,8 @@ const Login = () => {
     e.preventDefault();
     // Here, you should check credentials using backend or Supabase in a real app
     if (idNumber && password) {
-      localStorage.setItem("loggedInUserId", idNumber);
-      localStorage.setItem("loggedInUserName", name);
+      localStorage.setItem("userId", idNumber);
+      localStorage.setItem("userName", name);
       navigate("/dashboard");
     } else {
       alert("Please enter your Patient ID and Password.");

@@ -1,58 +1,40 @@
 const express = require('express');
 const router = express.Router();
-const Appointment = require('../models/Appointment');
+const User = require('../models/User');
 
-// Middleware to simulate authentication and set current user
-const mockCurrentUserId = "64a7f0f1c2a1b2c3d4e5f678"; // Replace with actual user id
-
-// POST /api/appointments/book - book a new appointment
+// POST /api/appointments/book - Book a new appointment and embed in user document
 router.post('/book', async (req, res) => {
   try {
+    const userId = req.header('x-user-id');
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized: No user ID provided' });
+    }
+
     const { date, time, doctor, type } = req.body;
     if (!date || !time || !doctor || !type) {
-      return res.status(400).json({ message: 'Missing required fields' });
+      return res.status(400).json({ message: 'Missing required appointment fields' });
     }
-    const appointment = new Appointment({
-      userId: mockCurrentUserId,
-      date,
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const newAppointment = {
+      date: new Date(date),
       time,
       doctor,
       type,
       status: 'Scheduled',
-    });
-    await appointment.save();
-    res.status(201).json(appointment);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+    };
 
-// GET /api/appointments/upcoming - get upcoming appointments for current user
-router.get('/upcoming', async (req, res) => {
-  try {
-    const now = new Date();
-    const appointments = await Appointment.find({
-      userId: mockCurrentUserId,
-      date: { $gte: now },
-      status: { $ne: 'Cancelled' },
-    }).sort({ date: 1, time: 1 });
-    res.json(appointments);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+    user.appointments.push(newAppointment);
+    await user.save();
 
-// GET /api/appointments/past - get past appointments for current user
-router.get('/past', async (req, res) => {
-  try {
-    const now = new Date();
-    const appointments = await Appointment.find({
-      userId: mockCurrentUserId,
-      date: { $lt: now },
-    }).sort({ date: -1, time: -1 });
-    res.json(appointments);
+    res.status(201).json({ message: 'Appointment booked successfully', appointment: newAppointment });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error('Error booking appointment:', err);
+    res.status(500).json({ message: 'Failed to book appointment' });
   }
 });
 

@@ -25,6 +25,9 @@ router.put('/:id', async (req, res) => {
     const userId = req.params.id;
     const updateData = req.body;
 
+    console.log("Update profile request for userId:", userId);
+    console.log("Update data:", updateData);
+
     // Prevent password updates through this route
     delete updateData.password;
 

@@ -32,6 +32,18 @@ const Index = () => {
           >
             Admin Login
           </a>
+          <a
+            href="/doc-login"
+            className="bg-blue-600 rounded-md text-white px-6 py-2 font-semibold hover:bg-blue-700 transition shadow"
+          >
+            Doctor Login
+          </a>
+          <a
+            href="/doc-login"
+            className="rounded-md text-gray-700 px-6 py-2 hover:bg-gray-100 font-semibold border border-gray-300 transition"
+          >
+            Nurse Login
+          </a>
         </div>
       </header>
 
