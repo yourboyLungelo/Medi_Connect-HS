@@ -1,62 +1,29 @@
-import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import React from "react";
 
 const UserSidebar = ({ isOpen, toggleSidebar }) => {
+  const role = localStorage.getItem("role") || "";
+
+  if (role !== "patient") {
+    // Do not show user sidebar if role is not patient
+    return null;
+  }
+
   return (
-    <nav
-      className={`fixed top-16 left-0 h-full bg-white shadow-md p-4 transform transition-transform duration-500 ease-in-out z-40 ${
-        isOpen ? 'translate-x-0' : '-translate-x-full'
-      } w-64`}
-      style={{
-        transitionProperty: 'transform, box-shadow',
-        boxShadow: isOpen ? '0 0 20px rgba(0, 0, 0, 0.3)' : 'none',
-      }}
-    >
-      <ul className="space-y-4">
-        <li>
-          <NavLink
-            to="/dashboard"
-            className={({ isActive }) =>
-              isActive ? 'text-blue-600 font-bold' : 'text-gray-700 hover:text-blue-600'
-            }
-            onClick={toggleSidebar}
-          >
-            Dashboard
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/bookappointment"
-            className={({ isActive }) =>
-              isActive ? 'text-blue-600 font-bold' : 'text-gray-700 hover:text-blue-600'
-            }
-            onClick={toggleSidebar}
-          >
-            Book Appointment
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/profile"
-            className={({ isActive }) =>
-              isActive ? 'text-blue-600 font-bold' : 'text-gray-700 hover:text-blue-600'
-            }
-            onClick={toggleSidebar}
-          >
-            Profile
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/logout"
-            className="text-gray-700 hover:text-blue-600"
-            onClick={toggleSidebar}
-          >
-            Logout
-          </NavLink>
-        </li>
-      </ul>
-    </nav>
+    <aside className={`fixed inset-y-0 left-0 bg-white shadow-md w-64 transform transition-transform duration-300 ease-in-out z-50 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
+      <div className="p-4">
+        <button onClick={toggleSidebar} className="mb-4 text-gray-600 hover:text-gray-900 focus:outline-none">
+          Close
+        </button>
+        <nav>
+          <ul>
+            <li><a href="/dashboard" className="block py-2 px-4 hover:bg-gray-100 rounded">Dashboard</a></li>
+            <li><a href="/profile" className="block py-2 px-4 hover:bg-gray-100 rounded">Profile</a></li>
+            <li><a href="/bookappointment" className="block py-2 px-4 hover:bg-gray-100 rounded">Appointments</a></li>
+            <li><a href="/settings" className="block py-2 px-4 hover:bg-gray-100 rounded">Settings</a></li>
+          </ul>
+        </nav>
+      </div>
+    </aside>
   );
 };
 

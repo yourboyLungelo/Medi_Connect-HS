@@ -143,6 +143,7 @@ const AdminDashboard = () => {
                       <tr className="bg-blue-600 text-white">
                         <th className="py-3 px-6 text-left">Name</th>
                         <th className="py-3 px-6 text-left">Email</th>
+                        <th className="py-3 px-6 text-left">ID Number</th>
                         <th className="py-3 px-6 text-left">Role</th>
                         <th className="py-3 px-6 text-left">Actions</th>
                       </tr>
@@ -156,6 +157,7 @@ const AdminDashboard = () => {
                           >
                             <td className="py-3 px-6">{user.name}</td>
                             <td className="py-3 px-6">{user.email}</td>
+                            <td className="py-3 px-6">{user.idNumber}</td>
                             <td className="py-3 px-6">{user.role}</td>
                             <td className="py-3 px-6 space-x-2">
                               <button className="text-blue-600 hover:underline">Edit</button>

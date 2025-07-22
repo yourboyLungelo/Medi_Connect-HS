@@ -32,7 +32,7 @@ const StaffLogin = () => {
       const staff = await response.json();
       localStorage.setItem('staffName', staff.name);
       alert("Logged in as staff: " + staffId);
-      navigate('/staffDashboard');
+      navigate('/doctorDashboard');
     } catch (error) {
       alert("Error during login: " + error);
     }

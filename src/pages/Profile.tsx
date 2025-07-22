@@ -26,11 +26,15 @@ const Profile = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const userId = localStorage.getItem('userId');
-        console.log("Fetching profile for userId:", userId);
+        const token = localStorage.getItem('token');
+        console.log("Fetching profile with token:", token);
+        if (!token) {
+          console.error("No token found in localStorage");
+          return; // Prevent fetch if no token
+        }
         const res = await fetch("http://localhost:5000/api/users/current", {
           headers: {
-            'x-user-id': userId || ''
+            'Authorization': `Bearer ${token}`
           }
         });
         if (res.ok) {
@@ -43,6 +47,8 @@ const Profile = () => {
             phoneNumber: data.phoneNumber || "",
             birthdate: data.birthdate || "",
           });
+        } else {
+          console.error("Failed to fetch user profile, status:", res.status);
         }
       } catch (error) {
         console.error("Failed to fetch user profile:", error);
@@ -62,26 +68,27 @@ const Profile = () => {
       setChangePasswordError("Please fill in both current and new passwords.");
       return;
     }
-    try {
-      const res = await fetch("http://localhost:5000/api/users/change-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-user-id": localStorage.getItem('userId') || ""
-        },
-        body: JSON.stringify({ currentPassword, newPassword }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setChangePasswordMessage(data.message);
-        setCurrentPassword("");
-        setNewPassword("");
-      } else {
-        setChangePasswordError(data.message || "Failed to change password.");
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch("http://localhost:5000/api/users/change-password", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ currentPassword, newPassword }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setChangePasswordMessage(data.message);
+          setCurrentPassword("");
+          setNewPassword("");
+        } else {
+          setChangePasswordError(data.message || "Failed to change password.");
+        }
+      } catch (err) {
+        setChangePasswordError("An error occurred. Please try again.");
       }
-    } catch (err) {
-      setChangePasswordError("An error occurred. Please try again.");
-    }
   };
 
   return (
@@ -115,10 +122,12 @@ const Profile = () => {
                   <form onSubmit={async (e) => {
                     e.preventDefault();
                     try {
-                      const res = await fetch(`http://localhost:5000/api/userProfile/${userProfile.userId}`, {
+                      const token = localStorage.getItem('token');
+                      const res = await fetch(`http://localhost:5000/api/userProfile/${userProfile.idNumber}`, {
                         method: "PUT",
                         headers: {
                           "Content-Type": "application/json",
+                          "Authorization": `Bearer ${token}`
                         },
                         body: JSON.stringify(editFormData),
                       });

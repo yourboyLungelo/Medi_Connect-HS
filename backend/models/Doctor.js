@@ -15,6 +15,7 @@ const DoctorSchema = new mongoose.Schema({
   qualification: { type: String, required: true },
   availability: { type: String, required: true },
   bio: { type: String, required: false },
+  role: { type: String, required: true, default: 'Doctor' },
   profilePicture: { type: String, required: false }, // URL or base64 string
 }, { timestamps: true });
 

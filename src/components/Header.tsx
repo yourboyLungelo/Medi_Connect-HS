@@ -1,6 +1,23 @@
 import React from "react";
 
 const Header = ({ toggleSidebar, isAdmin = false }) => {
+  const role = localStorage.getItem("role") || "";
+  const idNumber = localStorage.getItem("idNumber") || "";
+
+  const handleHomeClick = () => {
+    if (role === "Doctor") {
+      window.location.href = "/doctorDashboard";
+    } else if (role === "Nurse") {
+      window.location.href = "/nurseDashboard";
+    } else if (role === "Admin") {
+      window.location.href = "/adminDashboard";
+    } else if(role === "patient" && idNumber){
+      window.location.href = "/dashboard";
+    }else{
+      //alert("Access Denied: Invalid role");
+    }
+  };
+
   return (
     <header className="bg-blue-700 text-white p-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
@@ -12,7 +29,7 @@ const Header = ({ toggleSidebar, isAdmin = false }) => {
           <ul className="flex space-x-4">
             <li>
               <button
-                onClick={() => window.location.href = isAdmin ? "/" : "/dashboard"}
+                onClick={handleHomeClick}
                 className="rounded-md text-white bg-blue-600 px-6 py-2 font-semibold hover:bg-blue-700 transition shadow"
               >
                 Home

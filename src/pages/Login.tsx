@@ -10,18 +10,33 @@ const Login = () => {
   const [name, setName] = useState("");
   const navigate = useNavigate();
 
-  // Dummy submit handler (no backend/auth yet)
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    // Here, you should check credentials using backend or Supabase in a real app
     if (idNumber && password) {
-      localStorage.setItem("userId", idNumber);
-      localStorage.setItem("userName", name);
-      navigate("/dashboard");
+      try {
+        const res = await fetch("http://localhost:5000/api/users/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ idNumber, password }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          localStorage.setItem("idNumber", data.idNumber);
+          localStorage.setItem("userName", data.name);
+          localStorage.setItem("role", data.role);
+          localStorage.setItem("token", data.token);
+          navigate("/dashboard");
+        } else {
+          alert(data.message || "Invalid ID number or password.");
+        }
+      } catch (error) {
+        alert("An error occurred during login. Please try again.");
+      }
     } else {
       alert("Please enter your Patient ID and Password.");
     }
-    
   };
 
   return (

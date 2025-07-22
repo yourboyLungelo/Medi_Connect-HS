@@ -2,12 +2,26 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 
-// GET /api/userProfile/:id - Get current user's profile by ID
+const jwt = require('jsonwebtoken');
+
+// GET /api/userProfile/:id - Get current user's profile by idNumber from JWT
 router.get('/:id', async (req, res) => {
   try {
-    const userId = req.params.id;
-    const user = await User.findById(userId).select('-password'); // exclude password
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'Unauthorized: No token provided' });
+    }
+    const token = authHeader.split(' ')[1];
+    let idNumber;
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      idNumber = decoded.idNumber;
+    } catch (err) {
+      console.error('JWT verification failed bro:', err);
+      return res.status(401).json({ message: 'Unauthorized: Invalid token' });
+    }
 
+    const user = await User.findOne({ idNumber }).select('-password');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -19,20 +33,31 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// PUT /api/userProfile/:id - Update current user's profile by ID
+// PUT /api/userProfile/:id - Update current user's profile by idNumber from JWT
 router.put('/:id', async (req, res) => {
   try {
-    const userId = req.params.id;
-    const updateData = req.body;
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'Unauthorized: No token provided' });
+    }
+    const token = authHeader.split(' ')[1];
+    let idNumber;
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      idNumber = decoded.idNumber;
+    } catch (err) {
+      console.error('JWT verification failed:', err);
+      return res.status(401).json({ message: 'Unauthorized: Invalid token' });
+    }
 
-    console.log("Update profile request for userId:", userId);
+    const updateData = req.body;
+    console.log("Update profile request for idNumber:", idNumber);
     console.log("Update data:", updateData);
 
     // Prevent password updates through this route
     delete updateData.password;
 
-    const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true }).select('-password');
-
+    const updatedUser = await User.findOneAndUpdate({ idNumber }, updateData, { new: true }).select('-password');
     if (!updatedUser) {
       return res.status(404).json({ message: 'User not found' });
     }

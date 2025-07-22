@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import UserSidebar from "@/components/UserSidebar";
+import { getIdNumberFromToken } from "@/lib/jwt";
 
 const Dashboard = () => {
   const [userProfile, setUserProfile] = useState(null);
@@ -10,6 +11,7 @@ const Dashboard = () => {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [loadingAppointments, setLoadingAppointments] = useState(true);
   const [userName, setUserName] = useState("");
+  const [userIdNumber, setUserIdNumber] = useState<string | null>(null);
 
   // Sidebar open state
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -67,15 +69,15 @@ const Dashboard = () => {
         window.removeEventListener(event, resetTimer);
       });
     };
-  }, [timeoutId]);
+  }, []);
 
   // Fetch user profile
   const fetchUserProfile = async () => {
     try {
-      const userId = localStorage.getItem('userId');
+      const token = localStorage.getItem('token');
       const res = await fetch("http://localhost:5000/api/users/current", {
         headers: {
-          'x-user-id': userId || ''
+          'Authorization': `Bearer ${token}`
         }
       });
       if (res.ok) {
@@ -93,10 +95,15 @@ const Dashboard = () => {
   // Fetch upcoming appointments
   const fetchUpcomingAppointments = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/appointments/upcoming");
+      const token = localStorage.getItem('token');
+      const res = await fetch("http://localhost:5000/api/users/current", {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (res.ok) {
         const data = await res.json();
-        setUpcomingAppointments(data);
+        setUpcomingAppointments(data.appointments.filter(appt => new Date(appt.date) >= new Date()));
       }
     } catch (error) {
       console.error("Failed to fetch upcoming appointments:", error);
@@ -106,10 +113,15 @@ const Dashboard = () => {
   // Fetch past appointments
   const fetchPastAppointments = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/appointments/past");
+      const token = localStorage.getItem('token');
+      const res = await fetch("http://localhost:5000/api/users/current", {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (res.ok) {
         const data = await res.json();
-        setPastAppointments(data);
+        setPastAppointments(data.appointments.filter(appt => new Date(appt.date) < new Date()));
       }
     } catch (error) {
       console.error("Failed to fetch past appointments:", error);
@@ -119,6 +131,13 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
+    // Extract idNumber from token on frontend
+    const token = localStorage.getItem('token');
+    if (token) {
+      const idNumber = getIdNumberFromToken(token);
+      setUserIdNumber(idNumber);
+    }
+
     fetchUserProfile();
     fetchUpcomingAppointments();
     fetchPastAppointments();
@@ -152,6 +171,7 @@ const Dashboard = () => {
             <h1 className="text-2xl font-semibold text-gray-800 mb-2">
               Welcome, {userName || "User"}!
             </h1>
+            
             <p className="text-gray-600">
               You have successfully logged in to the Medi_Connect Health Portal.
             </p>

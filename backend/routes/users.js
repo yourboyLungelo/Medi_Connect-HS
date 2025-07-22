@@ -7,13 +7,13 @@ const { sendEmail } = require('../utils/email');
 
 router.post('/register', async (req, res) => {
   try {
-    console.log("Registration request body:", req.body);
+    //console.log("Registration request body:", req.body);
     const { idNumber, name, email, phoneNumber, password } = req.body;
     if (!idNumber || !name || !email || !password) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    // Check if user already exists by email or idNumber
+    const existingUser = await User.findOne({ $or: [{ email }, { idNumber }] });
     if (existingUser) {
       return res.status(409).json({ message: 'User already exists' });
     }
@@ -46,20 +46,59 @@ router.get('/', async (req, res) => {
 });
 
 
-const authenticate = (req, res, next) => {
-  // Example authentication middleware
-  // In real app, extract user ID from JWT token or session
-  // Here, we simulate by reading user ID from header 'x-user-id'
-  const userId = req.header('x-user-id');
-  console.log("Authenticate middleware received userId:", userId);
-  if (!userId) {
-    return res.status(401).json({ message: 'Unauthorized: No user ID provided' });
-  }
-  req.userId = userId;
-  next();
-};
+//const jwt = require('jsonwebtoken');
 
-// GET /api/users/current - get current logged-in user info
+const authenticate = (req, res, next) => {
+  // Extract user ID from JWT token in Authorization header
+  const authHeader = req.headers.authorization;
+  //console.log("Authorization header:", authHeader);
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.log("No token provided in Authorization header");
+    // Allow requests without token to pass through without authentication
+    // This prevents jwt malformed errors for routes that don't require auth
+    return next();
+  }
+  const token = authHeader.split(' ')[1];
+  console.log("Token received:", token);
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.userId = decoded.idNumber; // use idNumber field from token payload
+    next();
+  } catch (err) {
+    console.error('JWT verification failed:', err);
+    return res.status(401).json({ message: 'Unauthorized: Invalid token' });
+  }
+};
+// POST /api/users/login - user login
+const jwt = require('jsonwebtoken');
+
+router.post('/login', async (req, res) => {
+  const { idNumber, password } = req.body;
+  if (!idNumber || !password) {
+    return res.status(400).json({ message: 'ID number and password are required' });
+  }
+  try {
+    const user = await User.findOne({ idNumber });
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid ID number or password' });
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid ID number or password' });
+    }
+    // Generate JWT token
+    const token = jwt.sign(
+      { idNumber: user.idNumber },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+    res.json({ idNumber: user.idNumber, name: user.name, role: user.role, token });
+  } catch (err) {
+    console.error('Error during user login:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
 router.get('/current', authenticate, async (req, res) => {
   try {
     console.log("Fetching user with idNumber:", req.userId);
