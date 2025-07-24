@@ -5,11 +5,11 @@ const Header = ({ toggleSidebar, isAdmin = false }) => {
   const idNumber = localStorage.getItem("idNumber") || "";
 
   const handleHomeClick = () => {
-    if (role === "Doctor") {
+    if (role === "doctor") {
       window.location.href = "/doctorDashboard";
-    } else if (role === "Nurse") {
+    } else if (role === "nurse") {
       window.location.href = "/nurseDashboard";
-    } else if (role === "Admin") {
+    } else if (role === "admin") {
       window.location.href = "/adminDashboard";
     } else if(role === "patient" && idNumber){
       window.location.href = "/dashboard";

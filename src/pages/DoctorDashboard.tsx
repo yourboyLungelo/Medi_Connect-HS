@@ -4,10 +4,10 @@ import Footer from "@/components/Footer";
 import UserSidebar from "@/components/UserSidebar";
 
 interface Appointment {
-  _id: string;
+  idNumber: string;
   date: string;
   time: string;
-  patientName: string;
+  userName: string;
   status: string;
   notes?: string;
 }
@@ -31,23 +31,34 @@ const DoctorDashboard = () => {
   const [selectedPatient, setSelectedPatient] = useState<PatientRecord | null>(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [welcomeVisible, setWelcomeVisible] = useState(true);
+  const [staffName, setStaffName] = useState("");
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
   useEffect(() => {
+    const name = localStorage.getItem("staffName") || "";
+    setStaffName(name);
+
+    // Fade out welcome message after 3 seconds
+    const timer = setTimeout(() => {
+      setWelcomeVisible(false);
+    }, 20000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     // Fetch appointments for the logged-in doctor
     const fetchAppointments = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/appointments/doctor", {
-          headers: {
-            "x-user-id": localStorage.getItem("userId") || "",
-          },
-        });
+        const staffId = localStorage.getItem("staffId") || "";
+        const res = await fetch(`http://localhost:5000/api/appointments/doctor?staffId=${encodeURIComponent(staffId)}`);
         if (!res.ok) throw new Error("Failed to fetch appointments");
         const data = await res.json();
-        setAppointments(data);
+        setAppointments(data.appointments || []);
       } catch (err) {
         setError("Error loading appointments");
       }
@@ -73,6 +84,7 @@ const DoctorDashboard = () => {
     fetchPatientRecords();
   }, []);
 
+
   const handleAppointmentAction = async (appointmentId: string, action: string) => {
     try {
       const res = await fetch(`http://localhost:5000/api/appointments/${appointmentId}/${action}`, {
@@ -86,7 +98,7 @@ const DoctorDashboard = () => {
       setMessage(`Appointment ${action}ed successfully`);
       // Refresh appointments
       const updatedAppointments = appointments.map((appt) =>
-        appt._id === appointmentId ? { ...appt, status: action === "approve" ? "Approved" : "Rejected" } : appt
+        appt.idNumber === appointmentId ? { ...appt, status: action === "approve" ? "Approved" : "Rejected" } : appt
       );
       setAppointments(updatedAppointments);
     } catch (err) {
@@ -123,6 +135,12 @@ const DoctorDashboard = () => {
         <main className="flex-grow p-6 overflow-auto max-w-7xl mx-auto">
           <h1 className="text-3xl font-semibold mb-6">Doctor Dashboard</h1>
 
+          {welcomeVisible && (
+            <div className="mb-4 p-4 bg-blue-200 text-blue-800 rounded text-center transition-opacity duration-1000 ease-in-out">
+              Welcome, Dr. {staffName}!
+            </div>
+          )}
+
           {message && <p className="text-green-600 mb-4">{message}</p>}
           {error && <p className="text-red-600 mb-4">{error}</p>}
 
@@ -143,22 +161,22 @@ const DoctorDashboard = () => {
                 </thead>
                 <tbody>
                   {appointments.map((appt) => (
-                    <tr key={appt._id} className="border-b">
+                    <tr key={appt.idNumber} className="border-b">
                       <td className="py-2 px-4">{appt.date}</td>
                       <td className="py-2 px-4">{appt.time}</td>
-                      <td className="py-2 px-4">{appt.patientName}</td>
+                      <td className="py-2 px-4">{appt.userName}</td>
                       <td className="py-2 px-4">{appt.status}</td>
                       <td className="py-2 px-4 space-x-2">
                         {appt.status === "Pending" && (
                           <>
                             <button
-                              onClick={() => handleAppointmentAction(appt._id, "approve")}
+                              onClick={() => handleAppointmentAction(appt.idNumber, "approved")}
                               className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
                             >
                               Approve
                             </button>
                             <button
-                              onClick={() => handleAppointmentAction(appt._id, "reject")}
+                              onClick={() => handleAppointmentAction(appt.idNumber, "rejected")}
                               className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                             >
                               Reject

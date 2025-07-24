@@ -12,7 +12,7 @@ const Profile = () => {
     name: "",
     email: "",
     phoneNumber: "",
-    birthdate: "",
+    dob: "",
   });
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -45,7 +45,7 @@ const Profile = () => {
             name: data.name || "",
             email: data.email || "",
             phoneNumber: data.phoneNumber || "",
-            birthdate: data.birthdate || "",
+            dob: data.dob || "",
           });
         } else {
           console.error("Failed to fetch user profile, status:", res.status);
@@ -108,7 +108,7 @@ const Profile = () => {
                   <p><strong>Patient ID:</strong> {userProfile.idNumber || "N/A"}</p>
                   <p><strong>Email:</strong> {userProfile.email || "N/A"}</p>
                   <p><strong>Phone:</strong> {userProfile.phoneNumber || "N/A"}</p>
-                  <p><strong>Birthdate:</strong> {userProfile.birthdate || "N/A"}</p>
+                  <p><strong>Birthdate:</strong> {userProfile.dob || "N/A"}</p>
                   <button
                     className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
                     onClick={() => setIsEditing(true)}
@@ -180,8 +180,8 @@ const Profile = () => {
                         id="birthdate"
                         type="date"
                         className="w-full border border-gray-300 rounded px-3 py-2"
-                        value={editFormData.birthdate}
-                        onChange={(e) => setEditFormData({ ...editFormData, birthdate: e.target.value })}
+                        value={editFormData.dob}
+                        onChange={(e) => setEditFormData({ ...editFormData, dob: e.target.value })}
                       />
                     </div>
                     <div className="flex space-x-4">

@@ -92,43 +92,27 @@ const Dashboard = () => {
     }
   };
 
-  // Fetch upcoming appointments
-  const fetchUpcomingAppointments = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await fetch("http://localhost:5000/api/users/current", {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setUpcomingAppointments(data.appointments.filter(appt => new Date(appt.date) >= new Date()));
+// Fetch upcoming appointments and past appointments together
+const fetchAppointments = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch("http://localhost:5000/api/users/current", {
+      headers: {
+        'Authorization': `Bearer ${token}`
       }
-    } catch (error) {
-      console.error("Failed to fetch upcoming appointments:", error);
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const now = new Date();
+      setUpcomingAppointments(data.appointments.filter(appt => new Date(appt.date) >= now));
+      setPastAppointments(data.appointments.filter(appt => new Date(appt.date) < now));
     }
-  };
-
-  // Fetch past appointments
-  const fetchPastAppointments = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await fetch("http://localhost:5000/api/users/current", {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setPastAppointments(data.appointments.filter(appt => new Date(appt.date) < new Date()));
-      }
-    } catch (error) {
-      console.error("Failed to fetch past appointments:", error);
-    } finally {
-      setLoadingAppointments(false);
-    }
-  };
+  } catch (error) {
+    console.error("Failed to fetch appointments:", error);
+  } finally {
+    setLoadingAppointments(false);
+  }
+};
 
   useEffect(() => {
     // Extract idNumber from token on frontend
@@ -139,8 +123,7 @@ const Dashboard = () => {
     }
 
     fetchUserProfile();
-    fetchUpcomingAppointments();
-    fetchPastAppointments();
+    fetchAppointments();
   }, []);
 
   return (
@@ -194,6 +177,7 @@ const Dashboard = () => {
                       <p><strong>Date:</strong> {new Date(appt.date).toLocaleDateString()}</p>
                       <p><strong>Time:</strong> {appt.time}</p>
                       <p><strong>Doctor:</strong> {appt.doctor}</p>
+                      <p><strong>Staff ID:</strong> {appt.staffId }</p>
                       <p><strong>Type:</strong> {appt.type}</p>
                       <p><strong>Status:</strong> {appt.status}</p>
                     </li>
@@ -214,7 +198,8 @@ const Dashboard = () => {
                     <li key={appt._id} className="mb-2 border-b pb-2">
                       <p><strong>Date:</strong> {new Date(appt.date).toLocaleDateString()}</p>
                       <p><strong>Time:</strong> {appt.time}</p>
-                      <p><strong>Doctor:</strong> {appt.doctor}</p>
+                      <p><strong>Doctor:</strong> {appt.doctor.split(' ')[0]}</p>
+                      <p><strong>Staff ID:</strong> {appt.staffId }</p>
                       <p><strong>Type:</strong> {appt.type}</p>
                       <p><strong>Status:</strong> {appt.status}</p>
                     </li>

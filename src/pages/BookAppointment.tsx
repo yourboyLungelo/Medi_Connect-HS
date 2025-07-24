@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import UserSidebar from "@/components/UserSidebar";
 
 interface Doctor {
-  _id: string;
+  staffId: string;
   name: string;
   surname: string;
   specialization: string;
@@ -99,7 +99,7 @@ const BookAppointment = () => {
       return;
     }
 
-    const userId = localStorage.getItem("userId");
+    const userId = localStorage.getItem("idNumber");
     if (!userId) {
       setError("User not logged in.");
       return;
@@ -108,17 +108,19 @@ const BookAppointment = () => {
     const formData = {
       date: bookingDate,
       time: bookingTime,
-      doctor: selectedDoctor._id,
+      doctor: selectedDoctor.name + " " + selectedDoctor.surname,
+      staffId: selectedDoctor.staffId,
       type: appointmentType,
-      additionalInfo,
+      additionalInfo: additionalInfo,
     };
 
     try {
+      const token = localStorage.getItem("token");
       const res = await fetch("http://localhost:5000/api/appointments/book", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-user-id": userId,
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
@@ -163,7 +165,7 @@ const BookAppointment = () => {
             )}
             {filteredDoctors.map((doctor) => (
               <div
-                key={doctor._id}
+                key={doctor.staffId}
                 className="bg-white p-4 rounded shadow flex flex-col justify-between w-full"
               >
                 <div>
@@ -172,6 +174,7 @@ const BookAppointment = () => {
                   </h2>
                   <p className="text-gray-700">{doctor.specialization}</p>
                   <p className="text-gray-700">{doctor.hospitalName}</p>
+                  
                 </div>
                 <div className="mt-4 flex space-x-4">
                   <button

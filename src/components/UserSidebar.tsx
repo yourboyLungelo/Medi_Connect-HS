@@ -1,10 +1,10 @@
 import React from "react";
 
 const UserSidebar = ({ isOpen, toggleSidebar }) => {
-  const role = localStorage.getItem("role") || "";
+  const role = localStorage.getItem("role") || null;
 
-  if (role !== "patient") {
-    // Do not show user sidebar if role is not patient
+  if (role !== "patient" && role !== null) {
+    // Do not show user sidebar if role is not patient or role is null
     return null;
   }
 

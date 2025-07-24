@@ -19,6 +19,20 @@ router.post('/register', async (req, res) => {
     }
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Extract DOB from idNumber (assuming first 6 digits are YYMMDD)
+    let dob = null;
+    if (idNumber && idNumber.length >= 6) {
+      const dobString = idNumber.substring(0, 6);
+      // Parse YYMMDD to Date
+      const year = parseInt(dobString.substring(0, 2), 10);
+      const month = parseInt(dobString.substring(2, 4), 10) - 1; // zero-based month
+      const day = parseInt(dobString.substring(4, 6), 10);
+      // Adjust year for 1900s or 2000s (simple heuristic)
+      const fullYear = year > 50 ? 1900 + year : 2000 + year;
+      dob = new Date(fullYear, month, day);
+    }
+
     // Create new user with role "Patient"
     const newUser = new User({
       idNumber,
@@ -26,6 +40,7 @@ router.post('/register', async (req, res) => {
       email,
       phoneNumber,
       password: hashedPassword,
+      dob,
     });
     await newUser.save();
     res.status(201).json({ message: 'User registered successfully' });
@@ -59,7 +74,7 @@ const authenticate = (req, res, next) => {
     return next();
   }
   const token = authHeader.split(' ')[1];
-  console.log("Token received:", token);
+  //console.log("Token received:", token);
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.userId = decoded.idNumber; // use idNumber field from token payload
@@ -101,7 +116,7 @@ router.post('/login', async (req, res) => {
 
 router.get('/current', authenticate, async (req, res) => {
   try {
-    console.log("Fetching user with idNumber:", req.userId);
+    //console.log("Fetching user with idNumber:", req.userId);
     const user = await User.findOne({ idNumber: req.userId }).select('-password');
     if (!user) {
       console.log("User not found for idNumber:", req.userId);
